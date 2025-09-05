@@ -205,9 +205,10 @@
             }
 
             // Update sections with response
-            summarySection.textContent = data.report.summary_report;
-            financialSection.textContent = data.report.financial_analysis;
-            marketSection.textContent = data.report.market_analysis;
+            summarySection.textContent = data.summary_report;
+            financialSection.textContent = data.financial_analysis;
+            marketSection.textContent = data.market_analysis;
+
 
         } catch (err) {
             console.error(err);
