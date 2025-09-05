@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from BACKEND.agents import financial_analyst, market_research_analyst, reporting_analyst
+from agents import financial_analyst, market_research_analyst, reporting_analyst
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend requests

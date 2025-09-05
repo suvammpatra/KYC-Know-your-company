@@ -1,6 +1,6 @@
 from crewai import Task
-from BACKEND.tools import tool
-from BACKEND.agents import financial_analyst,market_research_analyst,reporting_analyst
+from tools import tool
+from agents import financial_analyst,market_research_analyst,reporting_analyst
 
 #3 Tasks would be carried out by different agents, namely Finacial analysis, Market analysis, Report writing
 #Financial Analysis
