@@ -175,12 +175,47 @@
     const financialSection = document.getElementById("financialSection");
     const marketSection = document.getElementById("marketSection");
 
-    // Existing event listener for generating report
+    // Generate report by calling backend
     button.addEventListener("click", async () => {
-        // ... (your existing code for generating the report remains here) ...
+        const companyName = document.getElementById("company").value.trim();
+        if (!companyName) {
+            alert("Please enter a company name!");
+            return;
+        }
+
+        // Clear previous reports
+        summarySection.textContent = "";
+        financialSection.textContent = "";
+        marketSection.textContent = "";
+
+        try {
+            const response = await fetch("https://YOUR_BACKEND_URL/generate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ company: companyName })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                alert("Error: " + data.error);
+                return;
+            }
+
+            // Update sections with response
+            summarySection.textContent = data.report.summary_report;
+            financialSection.textContent = data.report.financial_analysis;
+            marketSection.textContent = data.report.market_analysis;
+
+        } catch (err) {
+            console.error(err);
+            alert("Failed to generate report.");
+        }
     });
 
-    // New event listener for downloading the PDF
+    // Download report as PDF
     downloadButton.addEventListener("click", () => {
         const reportGrid = document.querySelector(".reports-grid");
         
@@ -189,25 +224,21 @@
             return;
         }
 
-        // Hide the download button during the capture process to prevent it from appearing in the PDF
         downloadButton.style.display = 'none';
 
-        // Use html2canvas to capture the content of the report grid
         html2canvas(reportGrid, { scale: 2 }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgProps= pdf.getImageProperties(imgData);
+            const imgProps = pdf.getImageProperties(imgData);
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-            // Add the captured image to the PDF
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            
+
             const companyName = document.getElementById("company").value.trim() || "Market_Research_Report";
             pdf.save(`${companyName}_Report.pdf`);
 
-            // Show the download button again
             downloadButton.style.display = 'block';
         });
     });
