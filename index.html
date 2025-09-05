@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Research Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1217;
+            --container-bg: rgba(25, 30, 35, 0.7);
+            --accent-color: #00ff66;
+            --text-color: #e0e0e0;
+            --card-bg: rgba(35, 40, 45, 0.8);
+            --card-border: 1px solid rgba(0, 255, 102, 0.2);
+            --button-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            background: radial-gradient(circle at top left, #1a2a3a 0%, #0d1217 60%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            letter-spacing: 2px;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px rgba(0, 255, 102, 0.6);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border: var(--card-border);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            transition: 0.3s ease;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--accent-color), 0 0 10px rgba(0, 255, 102, 0.4);
+        }
+
+        button {
+            width: 100%;
+            background: var(--accent-color);
+            color: var(--bg-color);
+            font-weight: 700;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--button-shadow);
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 2rem;
+        }
+
+        .section {
+            padding: 25px;
+            background: var(--card-bg);
+            border: var(--card-border);
+            border-radius: 12px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            transition: transform 0.3s ease;
+            animation: slideIn 0.8s forwards;
+            opacity: 0;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.4s; }
+
+        .section h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--accent-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 1px dashed rgba(0, 255, 102, 0.3);
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>Market Insights Engine</header>
+
+<div class="container">
+    <div class="input-group">
+        <label for="company">Enter Company Name:</label>
+        <input type="text" id="company" placeholder="e.g. Tesla">
+    </div>
+    <button id="generateBtn">Analyze & Generate Report ✨</button>
+    <button id="downloadPdfBtn">Download as PDF 📥</button>
+
+    <div class="reports-grid">
+        <div class="section" id="summarySection"></div>
+        <div class="section" id="financialSection"></div>
+        <div class="section" id="marketSection"></div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    const button = document.getElementById("generateBtn");
+    const downloadButton = document.getElementById("downloadPdfBtn");
+    const summarySection = document.getElementById("summarySection");
+    const financialSection = document.getElementById("financialSection");
+    const marketSection = document.getElementById("marketSection");
+
+    // Existing event listener for generating report
+    button.addEventListener("click", async () => {
+        // ... (your existing code for generating the report remains here) ...
+    });
+
+    // New event listener for downloading the PDF
+    downloadButton.addEventListener("click", () => {
+        const reportGrid = document.querySelector(".reports-grid");
+        
+        if (!reportGrid || reportGrid.textContent.trim() === '') {
+            alert('Please generate a report first!');
+            return;
+        }
+
+        // Hide the download button during the capture process to prevent it from appearing in the PDF
+        downloadButton.style.display = 'none';
+
+        // Use html2canvas to capture the content of the report grid
+        html2canvas(reportGrid, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgProps= pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            // Add the captured image to the PDF
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            
+            const companyName = document.getElementById("company").value.trim() || "Market_Research_Report";
+            pdf.save(`${companyName}_Report.pdf`);
+
+            // Show the download button again
+            downloadButton.style.display = 'block';
+        });
+    });
+</script>
+
+</body>
+</html>
